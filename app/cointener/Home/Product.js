@@ -72,10 +72,6 @@ export default function Product({navigation}) {
           </TouchableOpacity>
         </ScrollView>
 
-
-        {/* //--------------------------------------------------------------------------------------------- */}
-
-
         <View style={{ flex: 1, marginTop: verticalScale(30) }}>
           <Text style={style.text}>Sale</Text>
           <Text style={style.subhead}>Super Summer Sale</Text>

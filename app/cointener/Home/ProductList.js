@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { horizontalScale, moderateScale, verticalScale } from '../../Constant/Metrics'
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -12,11 +12,21 @@ import ProductCard from '../../component/ProductCard';
 
 export default function ProductList({ navigation }) {
   const [model, Setmodel] = useState(false)
+  const [productData, SetProductData] = useState([])
   const handlepress = () => {
     Setmodel(true)
   }
   const handleclose = () => {
     Setmodel(false)
+  }
+  useEffect(() => {
+    HandleData();
+  }, []);
+  const HandleData = async () => {
+    const responce = await fetch('https://api.escuelajs.co/api/v1/products')
+    const Data = await responce.json();
+    console.log(Data);
+    SetProductData(Data)
   }
   return (
     <View>
@@ -58,68 +68,23 @@ export default function ProductList({ navigation }) {
           <Feather name='list' color='black' size={25} />
         </TouchableOpacity>
       </View>
-      <ScrollView>
-      <View style={{width:'90%',marginLeft:horizontalScale(20), flexDirection: 'row' }}>
-          <Card 
-            imguri={require('../../../assets/images/tired-girl-heels.jpg')}
-            title="Dorothy Perkins"
-            mainTitle='Denim Jacket'
-            Dollar={'20$'}
-            discount='-20%'
-            disColor='#DB3022'
-            onPress={()=>navigation.navigate('ProductDetails')}
-          />
-          <Card 
-            imguri={require('../../../assets/images/beautiful-young-woman-dress-walking-isolated-white-background.jpg')}
-            title="Women Product"
-            mainTitle='Night Dress'
-            Dollar={'50$'}
-            discount='-10%'
-            disColor='#DB3022'
-            onPress={()=>navigation.navigate('ProductDetails')}
-          />          
-      </View>
-      <View style={{ width:'90%',marginLeft:horizontalScale(20),flexDirection: 'row' }}>
-          <Card 
-            imguri={require('../../../assets/images/front-view-smiley-woman-pointing-herself.jpg')}
-            title="Women Product"
-            mainTitle='White T-Shit'
-            Dollar={'26$'}
-            discount='-5%'
-            disColor='black'
-            onPress={()=>navigation.navigate('ProductDetails')}
-          />
-          <Card 
-            imguri={require('../../../assets/images/perky-girl-stylish-handbag.jpg')}
-            title="Dorothy Perkins"
-            mainTitle='Denim Jacket'
-            Dollar={'20$'}
-            discount='-20%'
-            disColor='#DB3022'
-            onPress={()=>navigation.navigate('ProductDetails')}
-          />          
-      </View>
-      <View style={{ width:'90%',marginLeft:horizontalScale(20),flexDirection: 'row' }}>
-          <Card 
-            imguri={require('../../../assets/images/young-woman-with-sunglasses-black-t-shirt-using-headphones.jpg')}
-            title="Dorothy Perkins"
-            mainTitle='Denim Jacket'
-            Dollar={'20$'}
-            discount='-20%'
-            disColor='#DB3022'
-            onPress={()=>navigation.navigate('ProductDetails')}
-          />
-          <Card 
-            imguri={require('../../../assets/images/beautiful-fashion-woman-violet-long-dress-hairstyle-with-pigtails-design-poses-studio.jpg')}
-            title="Dorothy Perkins"
-            mainTitle='Denim Jacket'
-            Dollar={'20$'}
-            discount='-20%'
-            disColor='#DB3022'
-            onPress={()=>navigation.navigate('ProductDetails')}
-          />          
-      </View>
-
+      <ScrollView style={{marginBottom:verticalScale(80),}}>
+        <View style={{width:'90%',marginLeft:horizontalScale(15),flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between'}}>
+          {
+            productData.map((v,i)=>{
+              return(
+                <ProductCard
+                imgurl={v.images[0]}  
+                dis={v.description}
+                titel={v.title}
+                price={v.price}
+                onPress={()=>navigation.navigate('ProductDetails')}
+              />
+              )
+            })
+          }
+         
+        </View>
       </ScrollView>
       <View>
         <Modal
@@ -135,18 +100,18 @@ export default function ProductList({ navigation }) {
 
             <View style={{ width: '100%', height: '100%', marginTop: verticalScale(30), }}>
               <TouchableOpacity style={{ width: '100%', height: verticalScale(55) }}>
-                <Text style={{fontSize: moderateScale(22), marginTop: verticalScale(14), marginLeft: horizontalScale(20), color: 'black', }}>Popular</Text>
+                <Text style={{ fontSize: moderateScale(22), marginTop: verticalScale(14), marginLeft: horizontalScale(20), color: 'black', }}>Popular</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: '100%', height: verticalScale(55),borderWidth:0.5 }}>
+              <TouchableOpacity style={{ width: '100%', height: verticalScale(55), borderWidth: 0.5 }}>
                 <Text style={{ fontSize: moderateScale(22), marginTop: verticalScale(14), marginLeft: horizontalScale(20), color: 'black' }}>Newest</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: '100%', height: verticalScale(55),borderWidth:0.5 }}>
+              <TouchableOpacity style={{ width: '100%', height: verticalScale(55), borderWidth: 0.5 }}>
                 <Text style={{ fontSize: moderateScale(22), marginTop: verticalScale(14), marginLeft: horizontalScale(20), color: 'black' }}>Customer review</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: '100%', height: verticalScale(55), backgroundColor: '#DB3022' ,borderWidth:0.5}}>
+              <TouchableOpacity style={{ width: '100%', height: verticalScale(55), backgroundColor: '#DB3022', borderWidth: 0.5 }}>
                 <Text style={{ fontSize: moderateScale(22), marginTop: verticalScale(14), marginLeft: horizontalScale(20), color: 'black' }}>Price: lowest to high</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: '100%', height: verticalScale(55) ,borderWidth:0.5}}>
+              <TouchableOpacity style={{ width: '100%', height: verticalScale(55), borderWidth: 0.5 }}>
                 <Text style={{ fontSize: moderateScale(22), marginTop: verticalScale(14), marginLeft: horizontalScale(20), color: 'black' }}>Price: highest to low</Text>
               </TouchableOpacity>
             </View>
