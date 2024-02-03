@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity } from 'reac
 import React from 'react'
 import { horizontalScale, moderateScale, verticalScale } from '../../Constant/Metrics'
 
-export default function Card({imguri, title, mainTitle, Dollar, discount, disColor,onPress }) {
+export default function Card({imguri, title, mainTitle, Dollar, discount, disColor,onPress,icon }) {
     return (
       
             <TouchableOpacity style={style.parentBox} onPress={onPress}>
@@ -12,14 +12,14 @@ export default function Card({imguri, title, mainTitle, Dollar, discount, disCol
                         source={imguri}
                     />
                     <Pressable style={{ margin: 6, padding: 1, backgroundColor: disColor, width:horizontalScale(25), position: 'absolute', borderRadius:moderateScale(10)}}>
-                        <Text style={{ fontSize: moderateScale(9), color: 'white', textAlign: 'center' }}>{discount}</Text>
+                        <Text style={{ fontSize: moderateScale(9), color: 'white', textAlign: 'center' }}>{discount}{icon}</Text>
                     </Pressable>
 
                 </View>
                 <View style={style.deatilBox}>
                     <Text style={style.title}>{title}</Text>
                     <Text style={style.mainTitle}>{mainTitle}</Text>
-                    <Text style={style.Dollar}> {Dollar}</Text>
+                    <Text style={style.Dollar}>$ {Dollar}</Text>
                 </View>
             </TouchableOpacity>
     

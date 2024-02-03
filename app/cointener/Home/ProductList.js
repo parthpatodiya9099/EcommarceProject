@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet, TextInput } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Modal, StyleSheet, TextInput, LogBox } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { horizontalScale, moderateScale, verticalScale } from '../../Constant/Metrics'
 import Feather from 'react-native-vector-icons/Feather';
@@ -8,86 +8,67 @@ import Card from '../../component/Card/Card';
 import CategariCard from '../../component/Card/CategariCard';
 import AppButton from '../../component/Button/AppButton';
 import ProductCard from '../../component/ProductCard';
+import { getProductData } from '../../redux/slices/ProductSlice';
+import { getCategoryData } from '../../redux/slices/CategorySlice';
+import { getSubCategoryData } from '../../redux/slices/SubCategorySlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-let arr = [];
+
 export default function ProductList({ navigation }) {
-
   const [model, Setmodel] = useState(false)
   const [productData, SetProductData] = useState([])
   const [search, Setsearch] = useState('')
   const [sort, setSort] = useState('')
   const [category, SetCategory] = useState('')
-
+console.log(Categoryid,'llllllllllllllllllllllllllllllllllllllllllll');
   const handlepress = () => {
     Setmodel(true)
   }
   const handleclose = () => {
     Setmodel(false)
   }
-
+  let dispatch = useDispatch()
   useEffect(() => {
-    HandleData();
+    dispatch(getProductData());
+    dispatch(getCategoryData());
+    dispatch(getSubCategoryData())
   }, []);
-  const HandleData = async () => {
-    const responce = await fetch('https://api.escuelajs.co/api/v1/products')
-    const Data = await responce.json();
-    SetProductData(Data)
-  }
 
-  const SearchsortData = () => {
-    let fdata = productData.filter((v) =>
-      v.title.toLowerCase().includes(search.toLowerCase())
-    )
-    if (category !== '') {
-      fdata = productData.filter((v) => category == v.category.name)
+  const data = useSelector(state => state.product);
+
+  const subCategorydata = useSelector(state => state.subCategory)
+
+  const fdata = data.data.filter((v) => v.category == Categoryid)
+
+
+  let displayData = data.data.filter((v) => v.SubCategory == fdataid)
+  const FilterData = subCategorydata.data.filter((v) => v.category == Categoryid);
+
+  const handleproducts = (id) => {
+    if (id == undefined) {
+      const fdata = data.data.filter((v) => v.category == Categoryid)
+      
+      displayData = fdata;
+    } else {
+      displayData = data.data.filter((v) => v.SubCategory == fdataid)
     }
-    fdata = fdata.sort((a, b) => {
-      if (sort === "AZ") {
-        return (a.title > b.title ? 1 : -1)
-      } else if (sort === "ZA") {
-        return (a.title < b.title ? 1 : -1)
-      } else if (sort === "hl") {
-        return (b.price - a.price)
-      } else if (sort === "lh") {
-        return (a.price - b.price)
-      } else {
-        return (a.title > b.title ? 1 : -1)
-      }
-    })
-
-
-    return fdata;
   }
-  const finleData = SearchsortData()
-
-
-
   return (
     <View>
-      {
-        finleData.map((v) => {
-          if (!arr.includes(v.category.name)) {
-            arr.push(v.category.name)
-          }
-        })
-      }
-
 
       {/* category */}
 
       <View style={style.contener}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <TouchableOpacity style={style.categorybox} onPress={() => SetCategory('')}>
+          <TouchableOpacity style={style.categorybox} onPress={() => handleproducts()}>
             <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', padding: 6 }}>All</Text>
           </TouchableOpacity>
           {
-            arr.map((v, i) => {
-              return (
-                <TouchableOpacity style={style.categorybox} key={i} onPress={() => SetCategory(v)}>
-                  <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', padding: 6 }}>{v}</Text>
-                </TouchableOpacity>
-              )
-            })
+            FilterData.map((v, i) => (
+              <TouchableOpacity style={style.categorybox} key={i} onPress={() => handleproducts(v.id)}>
+                <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', padding: 6 }}>{v.SubCategory}</Text>
+              </TouchableOpacity>
+            ))
           }
 
         </ScrollView>
@@ -101,14 +82,14 @@ export default function ProductList({ navigation }) {
           <Feather name='filter' color='black' size={25} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => (navigation.navigate('Filter'))}>
-          <Text style={{ fontSize: moderateScale(18), marginLeft: verticalScale(7), marginTop: verticalScale(2) }}>Filters</Text>
+          <Text style={{ fontSize: moderateScale(18), marginLeft: verticalScale(7), marginTop: verticalScale(2), color: 'black' }}>Filters</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ marginLeft: horizontalScale(40), }} onPress={() => handlepress()}>
           <AntDesign name='swap' color='black' size={25} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handlepress()}>
-          <Text style={{ fontSize: moderateScale(18), marginLeft: verticalScale(7), marginTop: verticalScale(2) }}>Price:High To Low</Text>
+          <Text style={{ fontSize: moderateScale(18), marginLeft: verticalScale(7), marginTop: verticalScale(2), color: 'black' }}>Price:High To Low</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ marginLeft: horizontalScale(50), flexShrink: 1 }}>
@@ -129,19 +110,20 @@ export default function ProductList({ navigation }) {
 
       {/* ProductCard */}
 
-      <ScrollView style={{ marginBottom: verticalScale(80), }}>
+      <ScrollView style={{ marginBottom: verticalScale(150), }}>
         <View style={style.productcardbox}>
           {
-            finleData.map((v, i) => {
+            displayData.map((v, i) => {
               return (
                 <ProductCard
-                  key={v.id}
-                  imgurl={v.images[0]}
+                  key={i}
+                  imgurl={{ uri: v.image }}
                   title={v.title}
-                  price={v.price}
-                  onPress={() => navigation.navigate('ProductDetails')}
+                  price={v.Price}
+                  onPress={() => { productid = v.id, navigation.navigate('ProductDetails') }}
                 />
               )
+
             })
           }
 
@@ -202,6 +184,7 @@ const style = StyleSheet.create({
     width: '89%',
     marginLeft: horizontalScale(20),
     borderBottomWidth: 0.5,
+    color: 'black'
   },
   contener: {
     width: '100%',

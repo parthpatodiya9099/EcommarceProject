@@ -9,7 +9,7 @@ export default function ProductCard({ imgurl, title, price, onPress }) {
             <View style={{ margin: 5 }}>
                 <TouchableOpacity style={style.imgbox} onPress={onPress}>
                     <Image
-                        source={{ uri: imgurl.toString().substring(0, 8) !== 'https://' ? "https://i.imgur.com/OKn1KFI.jpeg" : imgurl }}
+                        source={imgurl}
                         style={style.img}
                     />
                 </TouchableOpacity>
