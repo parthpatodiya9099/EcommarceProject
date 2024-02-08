@@ -12,47 +12,79 @@ import { getProductData } from '../../redux/slices/ProductSlice';
 import { getCategoryData } from '../../redux/slices/CategorySlice';
 import { getSubCategoryData } from '../../redux/slices/SubCategorySlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRoute } from '@react-navigation/native';
 
 
 export default function ProductList({ navigation }) {
+
   const [model, Setmodel] = useState(false)
-  const [productData, SetProductData] = useState([])
   const [search, Setsearch] = useState('')
-  const [sort, setSort] = useState('')
+  const [sort, setSort] = useState([])
+  const [backgroundid, Setbackgroundid] = useState('')
   const [category, SetCategory] = useState('')
-console.log(Categoryid,'llllllllllllllllllllllllllllllllllllllllllll');
+
+  const route = useRoute()
+  const Categoryid = route.params?.Categoryid
+  const fdataid = route.params?.fdataid;
+
   const handlepress = () => {
     Setmodel(true)
   }
   const handleclose = () => {
     Setmodel(false)
   }
+
   let dispatch = useDispatch()
+
+  const data = useSelector(state => state.product);
+  const subCategorydata = useSelector(state => state.subCategory)
+
+  let FilterData = subCategorydata.data.filter((v) => v.category == Categoryid);
+
   useEffect(() => {
     dispatch(getProductData());
     dispatch(getCategoryData());
-    dispatch(getSubCategoryData())
+    dispatch(getSubCategoryData());
   }, []);
 
-  const data = useSelector(state => state.product);
 
-  const subCategorydata = useSelector(state => state.subCategory)
+  const searchSortData = () => {
+    let fdata;
 
-  const fdata = data.data.filter((v) => v.category == Categoryid)
-
-
-  let displayData = data.data.filter((v) => v.SubCategory == fdataid)
-  const FilterData = subCategorydata.data.filter((v) => v.category == Categoryid);
-
-  const handleproducts = (id) => {
-    if (id == undefined) {
-      const fdata = data.data.filter((v) => v.category == Categoryid)
-      
-      displayData = fdata;
+    if (category == 'all') {
+      fdata = data.data.filter((v) => v.category == Categoryid)
+    } else if (category) {
+      fdata = data.data.filter((v) => v.SubCategory == category)
+    } else if (fdataid) {
+      fdata = data.data.filter((v) => v.SubCategory == fdataid)
     } else {
-      displayData = data.data.filter((v) => v.SubCategory == fdataid)
+      fdata = data.data
     }
+
+    fdata = fdata.filter((v) =>
+      v.title.toLowerCase().includes(search.toLowerCase()) ||
+      v.Description.toLowerCase().includes(search.toLowerCase()) ||
+      v.Price.toString().includes(search.toLowerCase())
+    )
+
+    fdata = fdata.sort((a, b) => {
+      if (sort == 'hl') {
+        return b.Price - a.Price
+      } else if (sort == 'lh') {
+        return a.Price - b.Price
+      } else if (sort == 'AZ') {
+        return a.title.localeCompare(b.title)
+      } else if (sort == 'ZA') {
+        return b.title.localeCompare(a.title)
+      }
+    })
+
+    return fdata
+
   }
+  const finalyData = searchSortData();
+
+
   return (
     <View>
 
@@ -60,19 +92,30 @@ console.log(Categoryid,'llllllllllllllllllllllllllllllllllllllllllll');
 
       <View style={style.contener}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <TouchableOpacity style={style.categorybox} onPress={() => handleproducts()}>
-            <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', padding: 6 }}>All</Text>
+
+          {
+            FilterData == '' ? style.ok :
+            <TouchableOpacity style={[
+            style.categorybox,
+            backgroundid === 'empty' ? { backgroundColor: 'gray' } : { backgroundColor: 'black' }
+          ]} onPress={() => { SetCategory('all'), Setbackgroundid('empty') }}>
+            <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', padding: 6 }}>All</Text>
           </TouchableOpacity>
+          }
+
           {
             FilterData.map((v, i) => (
-              <TouchableOpacity style={style.categorybox} key={i} onPress={() => handleproducts(v.id)}>
-                <Text style={{ fontSize: 18, color: 'white', textAlign: 'center', padding: 6 }}>{v.SubCategory}</Text>
+              <TouchableOpacity style={[
+                style.categorybox,
+                backgroundid === v.id ? { backgroundColor: 'gray' } : { backgroundColor: 'black' }
+              ]} key={i} onPress={() => { SetCategory(v.id), Setbackgroundid(v.id) }}>
+                <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', padding: 6 }}>{v.SubCategory}</Text>
               </TouchableOpacity>
             ))
+
           }
 
         </ScrollView>
-
       </View>
 
       {/* Filter */}
@@ -110,10 +153,10 @@ console.log(Categoryid,'llllllllllllllllllllllllllllllllllllllllllll');
 
       {/* ProductCard */}
 
-      <ScrollView style={{ marginBottom: verticalScale(150), }}>
+      <ScrollView style={{ marginBottom: verticalScale(96), }}>
         <View style={style.productcardbox}>
           {
-            displayData.map((v, i) => {
+            finalyData.map((v, i) => {
               return (
                 <ProductCard
                   key={i}
@@ -169,6 +212,7 @@ console.log(Categoryid,'llllllllllllllllllllllllllllllllllllllllllll');
     </View>
   )
 }
+
 const style = StyleSheet.create({
   modlestyle: {
     width: '100%',
@@ -188,7 +232,6 @@ const style = StyleSheet.create({
   },
   contener: {
     width: '100%',
-    height: verticalScale(50),
     flexDirection: 'row',
     padding: 5
   },

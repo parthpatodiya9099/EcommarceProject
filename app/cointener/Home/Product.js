@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getProductData } from '../../redux/slices/ProductSlice'
 import { getCategoryData } from '../../redux/slices/CategorySlice'
 import { getSubCategoryData } from '../../redux/slices/SubCategorySlice'
+import styles from 'rn-range-slider/styles'
 
 
 export default function Product({ navigation }) {
@@ -69,7 +70,7 @@ export default function Product({ navigation }) {
                   discount='NEW'
                   icon=''
                   disColor='black'
-                  onPress={() => { productid = v.id, navigation.navigate('ProductDetails') }}
+                  onPress={() => { productid = v.id, navigation.navigate('ProductDetails',) }}
                 />
               </TouchableOpacity>
             ))
@@ -108,7 +109,7 @@ export default function Product({ navigation }) {
         <View style={style.viewbox}>
           {
             category.data.map((v, i) => (
-              <TouchableOpacity style={style[`categoryimg${i % 3 + 1}`]} onPress={() =>{Categoryid=v.id,navigation.navigate('Categories')}} key={i}>
+              <TouchableOpacity style={style[`categoryimg${i % 3 + 1}`]} onPress={() => navigation.navigate('Categories', { c_id: v.id })} key={i}>
                 <Image
                   style={style.img}
                   source={{ uri: v.image }}
@@ -123,8 +124,8 @@ export default function Product({ navigation }) {
     </View>
   )
 }
-
 const style = StyleSheet.create({
+
   text: {
     fontSize: moderateScale(30),
     color: 'black',
@@ -146,17 +147,20 @@ const style = StyleSheet.create({
   categoryimg1: {
     width: '100%',
     height: 350,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    opacity: 0.5
   },
   categoryimg2: {
     width: '50%',
     height: 300,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    opacity: 0.5
   },
   categoryimg3: {
     width: '50%',
     height: 300,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    opacity: 0.5
   },
 
   img: {
@@ -169,12 +173,15 @@ const style = StyleSheet.create({
     flexWrap: 'wrap'
   },
   fonttxt: {
+    textAlign:'center',
     fontSize: 30,
-    color: 'red',
+    color: 'white',
     position: 'absolute',
-    bottom: 150,
-    right: 60,
+    bottom:0,
+    right:0,
     fontWeight: '900',
-    fontFamily: 'serif'
-  }
+    fontFamily: 'serif',
+    backgroundColor: 'black',
+    opacity: 1
+  },
 })

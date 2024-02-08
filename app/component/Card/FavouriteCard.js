@@ -3,7 +3,7 @@ import React from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import { horizontalScale, moderateScale, verticalScale } from '../../Constant/Metrics';
 
-export default function FavouriteCard({img,color,Product,price,size,onPress}) {
+export default function FavouriteCard({img,color,Product,price,size,onPress,onPressC}) {
     return (
         <View>
 
@@ -15,9 +15,9 @@ export default function FavouriteCard({img,color,Product,price,size,onPress}) {
                     />
                 </View>
                 <View style={style.detailsbox}>
-                    <Text style={{ fontSize:moderateScale(18), marginLeft:horizontalScale(5), marginTop:verticalScale(15) }}>Lime</Text>
-                    <Text style={{ fontSize:moderateScale(25), color: 'black', marginLeft: horizontalScale(5), marginTop: verticalScale(5) }}>{Product}</Text>
-                    <Text style={{ fontSize: moderateScale(15), marginLeft: 5, marginTop:verticalScale(5) }}>Color : <Text style={{ fontSize: 16, color: 'black' }}>{color}</Text></Text>
+                    <Text style={{ fontSize:moderateScale(18), marginLeft:horizontalScale(5), marginTop:verticalScale(15) }}>{Product}</Text>
+                    {/* <Text style={{ fontSize:moderateScale(25), color: 'black', marginLeft: horizontalScale(5), marginTop: verticalScale(2) }}></Text> */}
+                    <Text style={{ fontSize: moderateScale(15), marginLeft: 5, marginTop:verticalScale(22) }}>Color : <Text style={{ fontSize: 16, color: 'black' }}>{color}</Text></Text>
                     <Text style={{ fontSize: moderateScale(25), color: 'black', marginLeft:horizontalScale(5), marginTop:verticalScale(5) }}>{price}</Text>
                 </View>
                 <View style={style.rettingBox}>
@@ -32,7 +32,7 @@ export default function FavouriteCard({img,color,Product,price,size,onPress}) {
                     </View>
                 </View>
                 <View style={style.iconbox}>
-                    <TouchableOpacity style={{paddingLeft:horizontalScale(10)}}>
+                    <TouchableOpacity style={{paddingLeft:horizontalScale(10)}} onPress={onPressC}>
                         <Feather name="x" size={moderateScale(25)} color="gray"/>
                     </TouchableOpacity>
                     <TouchableOpacity style={{width:horizontalScale(43),height:verticalScale(44),backgroundColor:'#DB3022',borderRadius:moderateScale(100),padding:13,marginTop:60,marginRight:5}} onPress={onPress}>

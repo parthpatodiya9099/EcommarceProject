@@ -4,78 +4,84 @@ import BagCard from '../../component/Card/BagCard'
 import Feather from 'react-native-vector-icons/Feather';
 import AppButton from '../../component/Button/AppButton';
 import { horizontalScale, moderateScale, verticalScale } from '../../Constant/Metrics';
+import { useDispatch, useSelector } from 'react-redux';
+import { decrement, increment, removefromCart } from '../../redux/slices/CartSlice';
 
-export default function MyBag({navigation}) {
-  const [count,setcount] =useState(0)
-  const handlepluse = () => {
-    setcount(count +1 )
+export default function MyBag({ navigation }) {
+
+  const dispatch = useDispatch()
+  const handleinc = (qty) => {
+    dispatch(increment(qty))
   }
-  const handlemiuns = () => {
-    setcount(count -1 )
+  const handledes = (qty) => {
+    dispatch(decrement(qty))
   }
+  const handledelete = (id) => {
+    dispatch(removefromCart(id))
+  }
+  const cart = useSelector(state => state.cart)
+  const productData = useSelector(state => state.product)
+
+  const AddCartData = cart.cart.map((c) => {
+    const productObj = productData.data.find((p) => p.id === c.id)
+    return { ...productObj, qty: c.qty }
+  })
+
+  const TotelAmount = parseInt(AddCartData.reduce((acc,v,i)=>acc+(v.Price*v.qty),0))
+
   const HandleAction = () => {
     navigation.navigate('Address')
   }
 
   return (
-    <View>
-      <ScrollView>
-        <BagCard
-          imgurl={require('../../../assets/images/front-view-smiley-woman-pointing-herself.jpg')}
-          color="white"
-          size="L"
-          price={count*12}
-          contity={count}
-          Product="T-Shirt"
-          onPressP={()=>handlepluse()}
-          onPressM={()=>handlemiuns()}
+    <ScrollView>
+      <View>
+        {
+          AddCartData.map((v, i) => (
+            <BagCard
+              imgurl={{ uri: v.image }}
+              color="white"
+              size="L"
+              price={parseInt(v.Price * v.qty)}
+              contity={v.qty}
+              Product={v.title}
+              onPressP={() => handleinc(v.id)}
+              onPressM={() => handledes(v.id)}
+              onPressD={()=>handledelete(v.id)}
+              key={i}
+            />
+          ))
+        }
+
+
+      </View>
+      <View style={{ flexDirection: 'row' }}>
+        <TextInput
+          style={{
+            width: horizontalScale(310), height: verticalScale(40), marginLeft: horizontalScale(20), marginTop: verticalScale(20), backgroundColor: "white", borderRadius: moderateScale(10), shadowOpacity: 0.10,
+            shadowRadius: 30, elevation: 4
+          }}
+          placeholder="Enter Your Promo Code"
+          keyboardType="numeric"
         />
-        <BagCard
-          imgurl={require('../../../assets/images/beautiful-smiling-brunette-girl-pointing-fingers-your-logo-showing-something-center.jpg')}
-          color="white"
-          size="M"
-          price={count*10}
-          contity={count}
-          Product="T-Shirt"
-          onPressP={()=>handlepluse()}
-          onPressM={()=>handlemiuns()}
-        />
-        <BagCard
-          imgurl={require('../../../assets/images/beautiful-young-woman-dress-walking-isolated-white-background.jpg')}
-          color="Blue"
-          size="X"
-          price={count*25}
-          contity={count}
-          Product="Night Dress"
-          onPressP={()=>handlepluse()}
-          onPressM={()=>handlemiuns()}
-        />
-      </ScrollView>
-      <View style={{flexDirection:'row'}}>
-      <TextInput
-        style={{ width:horizontalScale(310), height:verticalScale(40),marginLeft:horizontalScale(20),marginTop:verticalScale(20),backgroundColor:"white",borderRadius:moderateScale(10),shadowOpacity: 0.10,
-        shadowRadius: 30,elevation: 4 }}
-        placeholder="Enter Your Promo Code"
-        keyboardType="numeric"
-      />
-      <TouchableOpacity style={{width:horizontalScale(40),height:verticalScale(40),backgroundColor:'black',borderRadius:moderateScale(100),marginTop:verticalScale(20),padding:10}}>
+        <TouchableOpacity style={{ width: horizontalScale(40), height: verticalScale(40), backgroundColor: 'black', borderRadius: moderateScale(100), marginTop: verticalScale(20), padding: 10 }}>
           <Feather name='arrow-right' size={moderateScale(20)} color="white" />
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
 
-      <View style={{flexDirection:'row',marginTop:verticalScale(30),marginLeft:horizontalScale(20),}}>
-          <Text style={{fontSize:moderateScale(15),marginTop:5}}>Total Amount:</Text>
-          <Text style={{fontSize:moderateScale(20),marginLeft:230,color:'black'}}>$102</Text>
+      <View style={{ flexDirection: 'row', marginTop: verticalScale(30), marginLeft: horizontalScale(20), }}>
+        <Text style={{ fontSize: moderateScale(15), marginTop: 5 }}>Total Amount:</Text>
+        <Text style={{ fontSize: moderateScale(20), marginLeft: 210, color: 'green' }}>${TotelAmount}</Text>
       </View>
-      <View style={{marginTop:verticalScale(10)}}>
-      <AppButton 
+      <View style={{ marginTop: verticalScale(10) }}>
+        <AppButton
           titel="CHECK OUT"
-          onPress={()=>HandleAction()}          
-       />
+          onPress={() => HandleAction()}
+        />
       </View>
-      
-      
 
-    </View>
+
+
+    </ScrollView>
   )
 }

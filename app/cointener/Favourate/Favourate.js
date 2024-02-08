@@ -1,58 +1,40 @@
 import { View, Text, ScrollView } from 'react-native'
-import React, { useState } from 'react'
 import FavouriteCard from '../../component/Card/FavouriteCard'
+import { useDispatch, useSelector } from 'react-redux'
+import { addtoCart } from '../../redux/slices/CartSlice'
+import { addFavouratelist, removefromFavourate } from '../../redux/slices/FavourateSlice'
 
 export default function Favourate({ navigation }) {
+  const favourateData = useSelector(state => state.favourate)
+  const productData = useSelector(state => state.product)
+
+  const FilterData = productData.data.filter((v) => favourateData.favourate.includes(v.id))
+ 
+  const dispatch = useDispatch()
+  const handleaddcart = (id) => {
+    dispatch(addtoCart(id))
+  }
+  const handleDelete = (id) => {
+    dispatch(addFavouratelist(id))
+  }
+
   return (
     <ScrollView>
-      <FavouriteCard
-        img={require('../../../assets/images/front-view-smiley-woman-pointing-herself.jpg')}
-        color="White"
-        Product="T-Shirt"
-        price="$15"
-        size='M'
-        onPress={() => navigation.navigate('Bag')}
-      />
-      <FavouriteCard
-        img={require('../../../assets/images/beautiful-smiling-brunette-girl-pointing-fingers-your-logo-showing-something-center.jpg')}
-        color="White"
-        Product="T-Shirt"
-        price="$12"
-        size='L'
-        onPress={() => navigation.navigate('Bag')}
-      />
-      <FavouriteCard
-        img={require('../../../assets/images/beautiful-young-woman-dress-walking-isolated-white-background.jpg')}
-        color="Blue"
-        Product="Dress"
-        price="$18"
-        size='XL'
-        onPress={() => navigation.navigate('Bag')}
-      />
-      <FavouriteCard
-        img={require('../../../assets/images/front-view-smart-man-holding-his-glasses.jpg')}
-        color="SkyBlue"
-        Product="Koti"
-        price="$8"
-        size='XXL'
-        onPress={() => navigation.navigate('Bag')}
-      />
-      <FavouriteCard
-        img={require('../../../assets/images/man-gray-pajamas-comfy-sleepwear-apparel-full-body.jpg')}
-        color="black"
-        Product="Shirt"
-        price="$16"
-        size='S'
-        onPress={() => navigation.navigate('Bag')}
-      />
-      <FavouriteCard
-        img={require('../../../assets/images/man-gray-pajamas-comfy-sleepwear-apparel-full-body.jpg')}
-        color="black"
-        Product="Shirt"
-        price="$16"
-        size='S'
-        onPress={() => navigation.navigate('Bag')}
-      />
+      {
+        FilterData.map((v,i) => (
+          <FavouriteCard
+            img={{uri:v.image}}
+            color="White"
+            Product={v.title}
+            price={v.Price}
+            size='M'
+            onPress={() =>{navigation.navigate('Bag'),handleaddcart(v.id)}}
+            key={i}
+            onPressC={()=>handleDelete(v.id)}
+          />
+        ))
+      }
+
     </ScrollView>
   )
 }

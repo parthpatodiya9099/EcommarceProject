@@ -9,17 +9,18 @@ import { useRoute } from "@react-navigation/native"
 import { getCategoryData } from '../../redux/slices/CategorySlice';
 import { getProductData } from '../../redux/slices/ProductSlice';
 import { getSubCategoryData } from '../../redux/slices/SubCategorySlice';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addtoCart } from '../../redux/slices/CartSlice';
+import { addFavouratelist } from '../../redux/slices/FavourateSlice';
 
 export default function ProductDetails({ navigation }) {
-  console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',productid);
+
   const [model, Setmodel] = useState(false)
   const [colormodel, Setcolormodel] = useState(false)
-  const [Active, SetActive] = useState(false)
-  const [ProductData, SetProductData] = useState([])
-  const route = useRoute()
-  const id = route.params?.id
+  // const [Active, SetActive] = useState(false)
+  const favourateData = useSelector(state => state.favourate)
 
+  const dispatch = useDispatch()
 
   const handlepress = () => {
     Setmodel(true)
@@ -33,18 +34,21 @@ export default function ProductDetails({ navigation }) {
   const HandleColorClose = () => {
     Setcolormodel(false)
   }
-  const handleFavourate = () => {
-    SetActive(!Active);
-    if (Active) {
-      console.log("Done");
-    }
-  }
 
+  const handleFavourate = (id) => {
+    dispatch(addFavouratelist(id))
+  }
+  const hadleaddcart = (id) => {
+    dispatch(addtoCart(id))
+  }
   useEffect(() => {
     getCategoryData();
     getProductData();
     getSubCategoryData()
   }, []);
+
+
+
 
   const productData = useSelector(state => state.product);
   const filterData = productData.data.filter((v) => v.id == productid);
@@ -55,6 +59,8 @@ export default function ProductDetails({ navigation }) {
         backgroundColor='#FFFFFF'
         barStyle='dark-content'
       />
+
+      {/* mainImage */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={style.imagebox}>
           {
@@ -70,6 +76,7 @@ export default function ProductDetails({ navigation }) {
         </View>
       </ScrollView>
 
+      {/* Size,COlor */}
       <View style={style.disbox}>
         <View style={style.btnbox}>
           <TouchableOpacity style={style.sizebox} onPress={() => handlepress()}>
@@ -78,21 +85,25 @@ export default function ProductDetails({ navigation }) {
           <TouchableOpacity style={style.sizebox} onPress={() => HandleColorPress()}>
             <Text style={{ marginLeft: horizontalScale(25), color: 'black', fontSize: moderateScale(15) }}>Color</Text>
           </TouchableOpacity>
+          {
+            filterData.map((v, i) => (
+              <TouchableOpacity style={style.likebox} onPress={() => handleFavourate(v.id)} key={i}>
+                <AntDesign name={favourateData.favourate.includes(v.id) ? 'heart' : 'hearto'} size={moderateScale(25)} color={favourateData.favourate.includes(v.id) ? 'red' : 'black'} />
+              </TouchableOpacity>
+            ))
+          }
 
-          <TouchableOpacity style={style.likebox} onPress={() => handleFavourate()}>
-            <AntDesign name={Active ? "hearto" : 'heart'} size={moderateScale(25)} color={!Active ? "red" : "black"} />
-          </TouchableOpacity>
         </View>
 
         {
-          filterData.map((v,i) => (
+          filterData.map((v, i) => (
             <View key={i}>
               <View style={style.textbox}>
-                <View style={style.tbox1 }>
+                <View style={style.tbox1}>
                   <Text style={{ fontSize: moderateScale(24), color: 'black' }}>{v.title}</Text>
                 </View>
                 <View style={style.tbox2}>
-                  <Text style={{color:'black',fontSize:24}}>{v.Price}</Text>
+                  <Text style={{ color: 'black', fontSize: 24 }}>{v.Price}</Text>
                 </View>
               </View>
 
@@ -114,22 +125,34 @@ export default function ProductDetails({ navigation }) {
         }
       </View>
 
-      <View style={{ width: '100%', height: verticalScale(100), backgroundColor: 'white', padding: 30, marginTop: verticalScale(15) }}>
+      {/* AddBtn */}
+      <View style={style.addcartbtn}>
         <AppButton
           titel="ADD TO CART"
-          onPress={() => navigation.navigate('Bag')}
+          onPress={() => {
+            filterData.map((v) => {
+              hadleaddcart(v.id)
+              navigation.navigate('Bag')
+            })
+          }}
         />
       </View>
-      <TouchableOpacity style={{ width: '100%', height: verticalScale(50), borderWidth: 0.5, flexDirection: 'row' }} onPress={() => navigation.navigate('Info')}>
-        <View><Text style={{ fontSize: moderateScale(20), color: 'black', marginTop: verticalScale(15), marginLeft: horizontalScale(20) }}>Shipping info</Text></View>
-        <View style={{ marginLeft: horizontalScale(240), marginTop: verticalScale(18) }}><Feather name="chevron-right" color={'black'} size={moderateScale(15)} /></View>
-      </TouchableOpacity>
-      <TouchableOpacity style={{ width: '100%', height: verticalScale(50), borderWidth: 0.5, flexDirection: 'row' }} onPress={() => navigation.navigate('Info')}>
-        <View><Text style={{ fontSize: moderateScale(20), color: 'black', marginTop: verticalScale(15), marginLeft: horizontalScale(20) }}>Support</Text></View>
-        <View style={{ marginLeft: horizontalScale(280), marginTop: verticalScale(18) }}><Feather name="chevron-right" color={'black'} size={moderateScale(15)} /></View>
-      </TouchableOpacity>
-      <Text style={{ fontSize: moderateScale(25), marginLeft: horizontalScale(20), marginTop: verticalScale(20), color: 'black', fontWeight: 'bold' }}>You can also like this</Text>
 
+
+      {/* <TouchableOpacity> */}
+      <>
+        <TouchableOpacity style={{ width: '100%', height: verticalScale(50), borderWidth: 0.5, flexDirection: 'row' }} onPress={() => navigation.navigate('Info')}>
+          <View><Text style={{ fontSize: moderateScale(20), color: 'black', marginTop: verticalScale(15), marginLeft: horizontalScale(20) }}>Shipping info</Text></View>
+          <View style={{ marginLeft: horizontalScale(240), marginTop: verticalScale(18) }}><Feather name="chevron-right" color={'black'} size={moderateScale(15)} /></View>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ width: '100%', height: verticalScale(50), borderWidth: 0.5, flexDirection: 'row' }} onPress={() => navigation.navigate('Info')}>
+          <View><Text style={{ fontSize: moderateScale(20), color: 'black', marginTop: verticalScale(15), marginLeft: horizontalScale(20) }}>Support</Text></View>
+          <View style={{ marginLeft: horizontalScale(280), marginTop: verticalScale(18) }}><Feather name="chevron-right" color={'black'} size={moderateScale(15)} /></View>
+        </TouchableOpacity>
+        <Text style={{ fontSize: moderateScale(25), marginLeft: horizontalScale(20), marginTop: verticalScale(20), color: 'black', fontWeight: 'bold' }}>You can also like this</Text>
+      </>
+
+      {/* LikeCard */}
       <View style={{ width: '100%', height: verticalScale(330), backgroundColor: 'white', marginTop: verticalScale(10) }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <LikeCard
@@ -153,7 +176,7 @@ export default function ProductDetails({ navigation }) {
         </ScrollView>
       </View>
 
-
+      {/* Model */}
       <View>
         <Modal
           animationType='slide'
@@ -202,6 +225,7 @@ export default function ProductDetails({ navigation }) {
         </Modal>
       </View>
 
+      {/* Modle2 */}
       <View>
         <Modal
           animationType='slide'
@@ -246,6 +270,13 @@ export default function ProductDetails({ navigation }) {
   )
 }
 const style = StyleSheet.create({
+  addcartbtn: {
+    width: '100%',
+    height: verticalScale(100),
+    backgroundColor: 'white',
+    padding: 30,
+    marginTop: verticalScale(15)
+  },
   imagebox: {
     width: horizontalScale(300),
     height: verticalScale(413),
@@ -323,12 +354,12 @@ const style = StyleSheet.create({
     padding: 8,
   },
   tbox1: {
-    width:'60%',
+    width: '60%',
   },
   tbox2: {
-    width:'40%',
+    width: '40%',
     fontSize: moderateScale(30),
     color: 'black',
-    marginLeft:80
+    marginLeft: 80
   }
 })
