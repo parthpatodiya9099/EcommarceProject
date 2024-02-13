@@ -17,7 +17,6 @@ export default function ProductDetails({ navigation }) {
 
   const [model, Setmodel] = useState(false)
   const [colormodel, Setcolormodel] = useState(false)
-  // const [Active, SetActive] = useState(false)
   const favourateData = useSelector(state => state.favourate)
 
   const dispatch = useDispatch()

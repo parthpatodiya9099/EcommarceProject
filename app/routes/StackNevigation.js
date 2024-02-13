@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Singup from '../cointener/SignUp';
 import ProductDetails from '../cointener/Home/ProductDetails';
 import MyBag from '../cointener/Cart/MyBag';
 import Address from '../cointener/Cart/Address';
@@ -16,6 +15,9 @@ import MyOrder from '../cointener/Profile/MyOrder';
 import ShippingInfo from '../cointener/Details/ShippingInfo';
 import { TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import SignUp from '../cointener/SignUp';
+import Login from '../cointener/Login';
+import Password from '../cointener/Password';
 
 
 
@@ -67,6 +69,15 @@ export const ProductStack = ({ navigation }) => {
             <Stack.Screen name='Filter' component={Filter} />
             <Stack.Screen name='MyOrder' component={MyOrder}/>
             <Stack.Screen name='Info' component={ShippingInfo} />
+            <Stack.Screen name='SignUp' component={SignUp}  options={{
+                    headerShown: false
+                }} />
+            <Stack.Screen name='login' component={Login}  options={{
+                    headerShown: false
+                }}/>
+            <Stack.Screen name='Password' component={Password} options={{
+                    headerShown: false
+                }} />
 
 
 

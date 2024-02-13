@@ -3,7 +3,7 @@ import React from 'react'
 import { horizontalScale, moderateScale, verticalScale } from '../Constant/Metrics'
 import Feather from 'react-native-vector-icons/Feather';
 
-export default function ProductCard({ imgurl, title, price, onPress }) {
+export default function ProductCard({ imgurl, title, price, onPress,dis,backcolor,per }) {
     return (
         <View>
             <View style={{ margin: 5 }}>
@@ -12,6 +12,9 @@ export default function ProductCard({ imgurl, title, price, onPress }) {
                         source={imgurl}
                         style={style.img}
                     />
+                    <View style={{
+                        backgroundColor:backcolor, width: 25, height: 12, position: 'absolute', borderRadius: 10, marginLeft: 2, marginTop: 2
+                    }}><Text style={{fontSize:10,color:'white',textAlign:'center'}}>{dis}{per}</Text></View>
                 </TouchableOpacity>
                 <View style={style.starbox}>
                     <Feather name="star" color='#FFBA49' size={moderateScale(16)} />
@@ -33,6 +36,15 @@ export default function ProductCard({ imgurl, title, price, onPress }) {
 }
 
 const style = StyleSheet.create({
+    dis: {
+        backgroundColor: 'red',
+        width: 20,
+        height: 10,
+        position: 'absolute',
+        borderRadius: 15,
+        marginLeft: 2,
+        marginTop: 2
+    },
     imgbox: {
         width: horizontalScale(150),
         height: verticalScale(200),

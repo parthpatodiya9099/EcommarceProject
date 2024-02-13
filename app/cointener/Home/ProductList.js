@@ -26,7 +26,8 @@ export default function ProductList({ navigation }) {
   const route = useRoute()
   const Categoryid = route.params?.Categoryid
   const fdataid = route.params?.fdataid;
-
+  const Newdata = route.params?.Newdata;
+  const discountData = route.params?.DiscountData
   const handlepress = () => {
     Setmodel(true)
   }
@@ -57,6 +58,10 @@ export default function ProductList({ navigation }) {
       fdata = data.data.filter((v) => v.SubCategory == category)
     } else if (fdataid) {
       fdata = data.data.filter((v) => v.SubCategory == fdataid)
+    } else if (Newdata) {
+      fdata = Newdata
+    } else if (discountData) {
+      fdata = discountData.sort((a,b)=>b.Discount - a.Discount)
     } else {
       fdata = data.data
     }
@@ -95,12 +100,12 @@ export default function ProductList({ navigation }) {
 
           {
             FilterData == '' ? style.ok :
-            <TouchableOpacity style={[
-            style.categorybox,
-            backgroundid === 'empty' ? { backgroundColor: 'gray' } : { backgroundColor: 'black' }
-          ]} onPress={() => { SetCategory('all'), Setbackgroundid('empty') }}>
-            <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', padding: 6 }}>All</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={[
+                style.categorybox,
+                backgroundid === 'empty' ? { backgroundColor: 'gray' } : { backgroundColor: 'black' }
+              ]} onPress={() => { SetCategory('all'), Setbackgroundid('empty') }}>
+                <Text style={{ color: 'white', fontSize: 18, textAlign: 'center', padding: 6 }}>All</Text>
+              </TouchableOpacity>
           }
 
           {
@@ -156,8 +161,19 @@ export default function ProductList({ navigation }) {
       <ScrollView style={{ marginBottom: verticalScale(96), }}>
         <View style={style.productcardbox}>
           {
-            finalyData.map((v, i) => {
-              return (
+            discountData ? finalyData.map((v, i) => (             
+              <ProductCard
+                key={i}
+                imgurl={{ uri: v.image }}
+                title={v.title}
+                price={v.Price}
+                dis={v.Discount}
+                backcolor={'red'}
+                per={'%'}
+                onPress={() => { productid = v.id, navigation.navigate('ProductDetails') }}
+              />
+           )) :
+             finalyData.map((v, i) => (             
                 <ProductCard
                   key={i}
                   imgurl={{ uri: v.image }}
@@ -165,9 +181,7 @@ export default function ProductList({ navigation }) {
                   price={v.Price}
                   onPress={() => { productid = v.id, navigation.navigate('ProductDetails') }}
                 />
-              )
-
-            })
+             ))
           }
 
         </View>

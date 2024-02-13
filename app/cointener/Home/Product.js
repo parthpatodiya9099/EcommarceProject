@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getProductData } from '../../redux/slices/ProductSlice'
 import { getCategoryData } from '../../redux/slices/CategorySlice'
 import { getSubCategoryData } from '../../redux/slices/SubCategorySlice'
-import styles from 'rn-range-slider/styles'
 
 
 export default function Product({ navigation }) {
@@ -16,18 +15,38 @@ export default function Product({ navigation }) {
     dispatch(getCategoryData());
     dispatch(getSubCategoryData())
   }, []);
+
+ 
   const data = useSelector(state => state.product);
   const category = useSelector(state => state.category);
 
 
   const filterData = data.data.filter((v) => v.Discount > 10)
 
+  const handlechack = () => {
+    category.data.map((v)=>{
+      if(v.id == '9QfztZ7ZVj6PusfpaP6t'){
+        navigation.navigate('Shop',{Categoryid:'9QfztZ7ZVj6PusfpaP6t'});
+      }
+    })
+  }
+ 
   const tempArr = [...data.data]
 
   tempArr.sort((a, b) => {
     return new Date(b.createAt) - new Date(a.createAt)
   }).splice(5)
 
+  const handleviewnew = () => {
+    tempArr.sort((a, b) => {
+      return new Date(b.createAt) - new Date(a.createAt)
+    })
+    navigation.navigate('Shop',{NewData:tempArr})
+  }
+  const handleDiscount = () => {
+    const DiscountData =data.data.filter((v) => v.Discount >= 1)
+    navigation.navigate('Shop',{DiscountData:DiscountData})
+  }
   return (
     <View style={style.containor}>
       <ScrollView>
@@ -40,19 +59,19 @@ export default function Product({ navigation }) {
         </View>
 
         <View style={{ position: 'absolute', padding: 10, marginLeft: 220 }}>
-          <Text style={{ color: 'black', marginTop: verticalScale(310), fontSize: moderateScale(50) }}>Fashion</Text>
-          <Text style={{ color: 'black', fontSize: moderateScale(50) }}>Sale</Text>
-          <Pressable
+          <Text style={{ color: 'black', marginTop: verticalScale(310), fontSize: moderateScale(50) }}>Women</Text>
+          <Text style={{ color: 'black', fontSize: moderateScale(50) }}>Fashion</Text>
+          <TouchableOpacity
             style={{ backgroundColor: '#DB3022', padding: 10, borderRadius: 20, marginTop: verticalScale(20) }}
-            onPress={() => { }}>
+            onPress={() => handlechack()}>
             <Text style={{ color: 'white', textAlign: 'center', }}>Check</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         <View style={{ position: 'relative', marginTop: verticalScale(12) }}>
           <Text style={style.text}>New</Text>
           <Text style={style.subhead}>You’ve never seen it before!</Text>
-          <Text style={{ position: 'absolute', color: 'black', marginLeft: horizontalScale(300), marginTop: verticalScale(35) }}>View all</Text>
+          <TouchableOpacity onPress={()=>handleviewnew()} style={{ position: 'absolute', color: 'black', marginLeft: horizontalScale(320), marginTop: verticalScale(35) }}><Text>View all</Text></TouchableOpacity>
         </View>
 
         <ScrollView
@@ -80,7 +99,7 @@ export default function Product({ navigation }) {
         <View style={{ flex: 1, marginTop: verticalScale(30) }}>
           <Text style={style.text}>Sale</Text>
           <Text style={style.subhead}>Super Summer Sale</Text>
-          <Text style={{ position: 'absolute', color: 'black', marginLeft: horizontalScale(300), marginTop: verticalScale(35) }}>View all</Text>
+          <TouchableOpacity onPress={()=>handleDiscount()} style={{ position: 'absolute', color: 'black', marginLeft: horizontalScale(320), marginTop: verticalScale(35) }}><Text>View all</Text></TouchableOpacity>
         </View>
 
         <ScrollView
@@ -173,12 +192,12 @@ const style = StyleSheet.create({
     flexWrap: 'wrap'
   },
   fonttxt: {
-    textAlign:'center',
+    textAlign: 'center',
     fontSize: 30,
     color: 'white',
     position: 'absolute',
-    bottom:0,
-    right:0,
+    bottom: 0,
+    right: 0,
     fontWeight: '900',
     fontFamily: 'serif',
     backgroundColor: 'black',

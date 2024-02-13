@@ -1,19 +1,33 @@
 
-import { View, Text, StyleSheet, StatusBar, TextInput, Button, Pressable, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-// import AntDesign from 'react-native-vector-icons/AntDesign';
+import { View, Text, StyleSheet, StatusBar, TextInput, Button, Pressable, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AppButton from '../component/Button/AppButton';
-
-
-
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+import { useDispatch } from 'react-redux';
+import { authEmialPass, singEmialPass } from '../redux/slices/authSlice';
 export default function SignUp({ navigation }) {
-  const [password, setpassword] = useState('');
-  const [name, setname] = useState('');
-  const [email, setemail] = useState('');
-
-
+  const dispatch = useDispatch()
+  const SingUpSchema = yup.object({
+    username: yup.string().required(),
+    email: yup.string().email().required(),
+    Password: yup.string().required()
+  })
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      email: '',
+      Password: ''
+    },
+    validationSchema: SingUpSchema,
+    onSubmit: (values, { resetForm }) => {
+      dispatch(singEmialPass(values))
+      resetForm()
+    }
+  })
+  const { handleBlur, handleChange, touched, errors, values, handleSubmit, setValues, setFieldValue } = formik
 
   return (
     <View style={style.container}>
@@ -23,45 +37,56 @@ export default function SignUp({ navigation }) {
         barStyle="dark-content"
 
       />
-      <MaterialIcons style={style.icon} name="keyboard-arrow-left" color={'black'} size={20} />
+      {/* <MaterialIcons style={style.icon} name="keyboard-arrow-left" color={'black'} size={20} /> */}
       <Text style={style.text}>Sign up</Text>
 
       <TextInput
-        style={style.input}
-        onChangeText={setname}
-        value={name}
+        style={style.inputtext}
         placeholder='Name'
         placeholderTextColor="grey"
+        name='username'
+        onChangeText={handleChange('username')}
+        onBlur={handleBlur('username')}
+        value={values.username}
       />
-
-      <TextInput
-        style={style.input1}
-        onChangeText={setemail}
-        value={email}
-        placeholder='Email'
-        placeholderTextColor="grey"
-
-      />
+      {
+        touched.username && errors.username ? <Text style={style.err}>{errors.username}</Text> : null
+      }
       <TextInput
         style={style.inputtext}
-        onChangeText={setpassword}
-        value={password}
-        placeholder='Password'
-        keyboardType='numeric'
+        placeholder='Email'
         placeholderTextColor="grey"
-
+        name='email'
+        onChangeText={handleChange('email')}
+        onBlur={handleBlur('email')}
+        value={values.email}
       />
-      <TouchableOpacity style={{ color: 'black', marginLeft: 220, marginTop: 10 }} onPress={()=>('')}>
-      <Text>Alreay have an account? <Feather style={style.icon} name="chevrons-right" color={'red'} size={19} /></Text>
+      {
+        touched.email && errors.email ? <Text style={style.err}>{errors.email}</Text> : null
+      }
+      <TextInput
+        style={style.inputtext}
+        placeholder='Password'
+        placeholderTextColor="grey"
+        name='Password'
+        onChangeText={handleChange('Password')}
+        onBlur={handleBlur('Password')}
+        value={values.Password}
+      />
+      {
+        touched.Password && errors.Password ? <Text style={style.err}>{errors.Password}</Text> : null
+      }
+      <TouchableOpacity style={{ color: 'black', marginLeft: 220, marginTop: 10 }} onPress={() => (navigation.navigate('login'))}>
+        <Text>Alreay have an account? <Feather style={style.icon} name="chevrons-right" color={'red'} size={19} /></Text>
       </TouchableOpacity>
 
-      <View style={{marginTop:30}}>
-      <AppButton 
-        titel="SING UP"
-        onPress={() => navigation.navigate('Product')}
-      /> 
+      <View style={{ marginTop: 30 }}>
+        <AppButton
+          titel="SING UP"
+          onPress={handleSubmit}
+        />
       </View>
-      
+
       <View style={style.parent}>
         <Text style={style.textStyle}>Or sign up with social account</Text>
       </View>
@@ -70,6 +95,10 @@ export default function SignUp({ navigation }) {
         <Pressable
           style={style.btnstyle}
           onPress={() => ('')}>
+          <Image 
+            source={require("../../assets/images/google.jpg")}
+            style={{ width: 40, height: 40,borderRadius:20 }}
+          />
         </Pressable>
         <Pressable
           style={style.btn}
@@ -80,7 +109,14 @@ export default function SignUp({ navigation }) {
     </View>
   )
 }
+
+
+
 const style = StyleSheet.create({
+  err: {
+    color: 'red',
+    marginLeft: 20
+  },
   container: {
     height: 1000,
     backgroundColor: '#f5f5f5',
@@ -88,9 +124,10 @@ const style = StyleSheet.create({
   text: {
     color: 'black',
     fontSize: 30,
-    marginTop: 20,
+    marginTop: 40,
     marginHorizontal: 16,
-    fontFamily: 'METRO POLICE BOLD'
+    fontFamily: 'METRO POLICE BOLD',
+    fontWeight: 'bold'
   },
   icon: {
     marginTop: 15,
@@ -129,7 +166,7 @@ const style = StyleSheet.create({
 
   },
   inputtext: {
-    marginTop: 10,
+    marginTop: 20,
     backgroundColor: 'white',
     padding: 20,
     marginHorizontal: 16,
@@ -164,7 +201,7 @@ const style = StyleSheet.create({
     marginTop: 10,
     backgroundColor: 'white',
     padding: 20,
-    width: 85,
+    width: 90,
     borderRadius: 30,
     marginRight: 90,
     shadowOpacity: 0.10,

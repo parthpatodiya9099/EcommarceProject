@@ -32,7 +32,7 @@ export default function BagCard({contity,imgurl,color,size,price,Product,onPress
                 </View>
                 <View style={style.iconbtn}>
                     <TouchableOpacity style={{ marginLeft: horizontalScale(8), marginTop:verticalScale(5)}} onPress={onPressD} >
-                        <MaterialCommunityIcons name="delete" size={moderateScale(25)} color="black" />
+                        <Feather name="x" size={moderateScale(25)} color="gray" />
                     </TouchableOpacity>
 
                     <Text style={{fontSize:moderateScale(20),color:"black",marginTop:verticalScale(50)}}>${price}</Text>
